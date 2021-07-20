@@ -6,19 +6,27 @@ variables:
   azureSubscription: testarmconnection
   appName: testappbyudhan
   # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+  #vmImageName: 'ubuntu-latest'
 
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: .
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    replaceExistingArchive: true
+jobs:
+- job: DeployFunctionApp
 
-- task: AzureFunctionApp@1 # Add this at the end of your file
-  inputs:
-    azureSubscription: $(azureSubscription)
-    appType: functionAppLinux
-    appName: $(appName)
-    package: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: .
+      includeRootFolder: false
+      archiveType: 'zip'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+      replaceExistingArchive: true
+
+  - task: AzureFunctionApp@1 # Add this at the end of your file
+    inputs:
+      azureSubscription: $(azureSubscription)
+      appType: functionAppLinux
+      appName: $(appName)
+      package: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
